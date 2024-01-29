@@ -2,9 +2,12 @@ import 'package:diary_flutter/model/year.dart';
 import 'package:diary_flutter/util/lunar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:mongol/mongol.dart';
+import 'package:diary_flutter/ui/month/month_page.dart';
 
 class YearPage extends StatefulWidget {
   const YearPage({super.key});
+
+  static const route = 'year_page';
 
   @override
   State<YearPage> createState() => _YearPageState();
@@ -15,6 +18,10 @@ class _YearPageState extends State<YearPage> {
       .map(
           (year) => Year(value: year, text: '${LunarUtil.year2Chinese(year)}年'))
       .toList();
+
+  void _openMonthPage(Year year) {
+    Navigator.pushNamed(context, MonthPage.route, arguments: year);
+  }
 
   Widget yearItem(Year year) {
     return Padding(
@@ -40,7 +47,13 @@ class _YearPageState extends State<YearPage> {
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
-            return yearItem(years[index]);
+            final year = years[index];
+            return GestureDetector(
+              onTap: () {
+                _openMonthPage(year);
+              },
+              child: yearItem(year),
+            );
           }),
     );
   }

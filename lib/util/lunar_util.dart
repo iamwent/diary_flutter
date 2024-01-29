@@ -35,9 +35,10 @@ class LunarUtil {
   ];
 
   static String year2Chinese(int year) {
-    if (year < 1900 || year > 9999) {
-      throw FormatException('illegal year range [1900-9999]: $year');
-    }
+    assert(
+      year >= 1900 && year <= 9999,
+      'illegal year range [1900-9999]: $year',
+    );
 
     var result = <String>[];
     int tail = year;
@@ -46,5 +47,11 @@ class LunarUtil {
       tail ~/= 10;
     } while (tail > 0);
     return result.reversed.join('');
+  }
+
+  static String month2Chinese(int month) {
+    assert(month >= 1 && month <= 12, 'illegal month range [1-12]: $month');
+
+    return _numbers[month];
   }
 }

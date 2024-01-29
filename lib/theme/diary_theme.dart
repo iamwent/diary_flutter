@@ -18,15 +18,15 @@ ThemeData diaryTheme() {
           fontFamily: 'Longzhao',
         ),
         bodyLarge: TextStyle(
-          fontSize: 22,
-          fontFamily: 'KhangxiDictTrial',
-        ),
-        bodyMedium: TextStyle(
           fontSize: 20,
           fontFamily: 'KhangxiDictTrial',
         ),
-        bodySmall: TextStyle(
+        bodyMedium: TextStyle(
           fontSize: 18,
+          fontFamily: 'KhangxiDictTrial',
+        ),
+        bodySmall: TextStyle(
+          fontSize: 16,
           fontFamily: 'KhangxiDictTrial',
         ),
       ));
