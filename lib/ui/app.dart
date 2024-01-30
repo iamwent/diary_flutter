@@ -1,4 +1,5 @@
 import 'package:diary_flutter/theme/diary_theme.dart';
+import 'package:diary_flutter/ui/day/day_page.dart';
 import 'package:diary_flutter/ui/month/month_page.dart';
 import 'package:diary_flutter/ui/year/year_page.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class DiaryApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         YearPage.route: (context) => const YearPage(),
         MonthPage.route: (context) => const MonthPage(),
+        DayPage.route: (context) => const DayPage(),
       },
     );
   }

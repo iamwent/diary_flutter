@@ -1,41 +1,49 @@
+import 'package:diary_flutter/model/diary.dart';
 import 'package:diary_flutter/model/month.dart';
 import 'package:diary_flutter/model/year.dart';
-import 'package:diary_flutter/ui/day/day_page.dart';
 import 'package:diary_flutter/ui/year/year_page.dart';
-import 'package:diary_flutter/util/lunar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:mongol/mongol.dart';
 
-class MonthPage extends StatefulWidget {
-  const MonthPage({super.key});
+class DayPage extends StatefulWidget {
+  const DayPage({super.key});
 
-  static const route = 'month_page';
+  static const route = 'day_page';
 
   @override
-  State<MonthPage> createState() => _MonthPageState();
+  State<DayPage> createState() => _DayPageState();
 }
 
-class _MonthPageState extends State<MonthPage> {
-  final months = [for (int i = 1; i <= 12; i++) i]
-      .map((month) => Month(
-            value: month,
-            text: '${LunarUtil.month2Chinese(month)}月',
-          ))
-      .toList();
-
-  void _openDayPage(Year year, Month month) {
-    Navigator.of(context).pushNamed(DayPage.route, arguments: (year, month));
-  }
+class _DayPageState extends State<DayPage> {
+  final diaries = [
+    Diary(
+      id: 0,
+      year: 2024,
+      month: 1,
+      title: '江南好',
+      content: '江南好\n风景旧曾谙\n日出江花红胜火\n春来江水绿如蓝\n能不忆江南',
+      location: '武汉',
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+    )
+  ];
 
   void _openYearPage() {
     Navigator.of(context).pushNamedAndRemoveUntil(YearPage.route, (_) => false);
   }
 
+  void _openMonthPage() {
+    Navigator.pop(context);
+  }
+
+  void _openDiaryPage(Diary diary) {}
+
   void _openComposePage() {}
 
   Widget sidebar(
-    Year year, {
+    Year year,
+    Month month, {
     void Function()? openYearPage,
+    void Function()? openMonthPage,
     void Function()? openComposePage,
   }) {
     return Padding(
@@ -80,18 +88,32 @@ class _MonthPageState extends State<MonthPage> {
               ),
             ),
           ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 24)),
+          GestureDetector(
+            // onTap: openYearPage,
+            onTap: () {
+              _openMonthPage();
+            },
+            child: MongolText(
+              month.text,
+              textAlign: MongolTextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget monthItem(Month month, {void Function()? onTap}) {
+  Widget diaryItem(Diary diary, {void Function(Diary)? onTap}) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        onTap?.call(diary);
+      },
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: MongolText(
-          month.text,
+          diary.title,
           textAlign: MongolTextAlign.center,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
@@ -99,22 +121,19 @@ class _MonthPageState extends State<MonthPage> {
     );
   }
 
-  Widget monthList({void Function(Month)? onItemTap}) {
+  Widget diaryList() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       alignment: Alignment.center,
       color: Colors.white,
       child: ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: months.length,
+        itemCount: diaries.length,
         reverse: true,
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
-          final month = months[index];
-          return monthItem(month, onTap: () {
-            onItemTap?.call(month);
-          });
+          return diaryItem(diaries[index], onTap: _openDiaryPage);
         },
       ),
     );
@@ -122,7 +141,8 @@ class _MonthPageState extends State<MonthPage> {
 
   @override
   Widget build(BuildContext context) {
-    final year = ModalRoute.of(context)?.settings.arguments as Year;
+    final (year, month) =
+        ModalRoute.of(context)?.settings.arguments as (Year, Month);
 
     return GestureDetector(
       onDoubleTap: () {
@@ -131,12 +151,12 @@ class _MonthPageState extends State<MonthPage> {
       child: Stack(
         alignment: AlignmentDirectional.topEnd,
         children: [
-          monthList(onItemTap: (month) {
-            _openDayPage(year, month);
-          }),
+          diaryList(),
           sidebar(
             year,
+            month,
             openYearPage: _openYearPage,
+            openMonthPage: _openMonthPage,
             openComposePage: _openComposePage,
           ),
         ],
