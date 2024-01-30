@@ -1,6 +1,7 @@
 import 'package:diary_flutter/model/diary.dart';
 import 'package:diary_flutter/model/month.dart';
 import 'package:diary_flutter/model/year.dart';
+import 'package:diary_flutter/ui/diary/diary_page.dart';
 import 'package:diary_flutter/ui/year/year_page.dart';
 import 'package:flutter/material.dart';
 import 'package:mongol/mongol.dart';
@@ -35,7 +36,9 @@ class _DayPageState extends State<DayPage> {
     Navigator.pop(context);
   }
 
-  void _openDiaryPage(Diary diary) {}
+  void _openDiaryPage(Diary diary) {
+    Navigator.of(context).pushNamed(DiaryPage.route);
+  }
 
   void _openComposePage() {}
 
@@ -63,7 +66,7 @@ class _DayPageState extends State<DayPage> {
             child: MongolText(
               year.text,
               textAlign: MongolTextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           const Padding(padding: EdgeInsets.symmetric(vertical: 12)),
@@ -73,8 +76,8 @@ class _DayPageState extends State<DayPage> {
               _openComposePage();
             },
             child: Container(
-              width: 28,
-              height: 28,
+              width: 32,
+              height: 32,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
@@ -82,7 +85,7 @@ class _DayPageState extends State<DayPage> {
               ),
               child: MongolText(
                 "撰",
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                     ),
               ),

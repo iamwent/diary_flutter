@@ -54,4 +54,17 @@ class LunarUtil {
 
     return _numbers[month];
   }
+
+  static String day2Chinese(int day) {
+    assert(day >= 1 && day <= 31, 'illegal month range [1-31]: $day');
+
+    return _numbers[day];
+  }
+
+  static String dateTime2Chinese(DateTime dateTime) {
+    final year = year2Chinese(dateTime.year);
+    final month = month2Chinese(dateTime.month);
+    final day = day2Chinese(dateTime.day);
+    return "$year年 $month月 $day日";
+  }
 }

@@ -26,6 +26,16 @@ class Diary {
 
   final int? createdAt;
 
+  DateTime get createdDatetime {
+    DateTime dateTime;
+    if (createdAt == null) {
+      dateTime = DateTime.now();
+    } else {
+      dateTime = DateTime.fromMillisecondsSinceEpoch(createdAt!);
+    }
+    return dateTime;
+  }
+
   @override
   String toString() {
     return 'Diary(id: $id, year: $year, month: $month, title: $title, content: $content, location: $location, createdAt: $createdAt,)';

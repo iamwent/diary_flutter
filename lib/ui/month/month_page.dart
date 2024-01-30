@@ -65,8 +65,8 @@ class _MonthPageState extends State<MonthPage> {
               _openComposePage();
             },
             child: Container(
-              width: 28,
-              height: 28,
+              width: 32,
+              height: 32,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
@@ -74,7 +74,7 @@ class _MonthPageState extends State<MonthPage> {
               ),
               child: MongolText(
                 "撰",
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                     ),
               ),
