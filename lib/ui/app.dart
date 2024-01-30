@@ -13,16 +13,18 @@ class DiaryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    return MaterialApp(
-      title: '小记',
-      theme: diaryTheme(),
-      initialRoute: YearPage.route,
-      routes: <String, WidgetBuilder>{
-        YearPage.route: (context) => const YearPage(),
-        MonthPage.route: (context) => const MonthPage(),
-        DayPage.route: (context) => const DayPage(),
-        DiaryPage.route: (context) => const DiaryPage(),
-      },
+    return SafeArea(
+      child: MaterialApp(
+        title: '小记',
+        theme: diaryTheme(),
+        initialRoute: YearPage.route,
+        routes: <String, WidgetBuilder>{
+          YearPage.route: (context) => const YearPage(),
+          MonthPage.route: (context) => const MonthPage(),
+          DayPage.route: (context) => const DayPage(),
+          DiaryPage.route: (context) => const DiaryPage(),
+        },
+      ),
     );
   }
 }
