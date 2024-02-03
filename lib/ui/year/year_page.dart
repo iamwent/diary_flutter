@@ -1,8 +1,8 @@
 import 'package:diary_flutter/model/year.dart';
-import 'package:diary_flutter/util/lunar_util.dart';
+import 'package:diary_flutter/repository/diary_store.dart';
+import 'package:diary_flutter/ui/month/month_page.dart';
 import 'package:flutter/material.dart';
 import 'package:mongol/mongol.dart';
-import 'package:diary_flutter/ui/month/month_page.dart';
 
 class YearPage extends StatefulWidget {
   const YearPage({super.key});
@@ -14,10 +14,17 @@ class YearPage extends StatefulWidget {
 }
 
 class _YearPageState extends State<YearPage> {
-  final years = [for (int i = 0; i < 20; i++) 2024 - i]
-      .map(
-          (year) => Year(value: year, text: '${LunarUtil.year2Chinese(year)}年'))
-      .toList();
+  List<Year> years = [];
+
+  @override
+  void initState() {
+    DiaryStore().findYears().then((value) => {
+          setState(() {
+            years = value;
+          })
+        });
+    super.initState();
+  }
 
   void _openMonthPage(Year year) {
     Navigator.pushNamed(context, MonthPage.route, arguments: year);

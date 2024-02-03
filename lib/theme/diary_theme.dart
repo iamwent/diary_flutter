@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 ThemeData diaryTheme() {
   return ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFC01730)),
       useMaterial3: true,
       textTheme: const TextTheme(
         titleLarge: TextStyle(

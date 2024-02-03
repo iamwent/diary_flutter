@@ -1,4 +1,5 @@
 import 'package:diary_flutter/model/diary.dart';
+import 'package:diary_flutter/ui/compose/compose_page.dart';
 import 'package:diary_flutter/util/lunar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:mongol/mongol.dart';
@@ -13,21 +14,15 @@ class DiaryPage extends StatefulWidget {
 }
 
 class _DiaryPageState extends State<DiaryPage> {
-  final diary = Diary(
-    id: 0,
-    year: 2024,
-    month: 1,
-    title: '江南好',
-    content: '江南好\n风景旧曾谙\n日出江花红胜火\n春来江水绿如蓝\n能不忆江南',
-    location: '武汉',
-    createdAt: DateTime.now().millisecondsSinceEpoch,
-  );
-
   bool _visible = true;
 
-  void _compose(Diary diary) {}
+  void _compose(Diary diary) {
+    Navigator.of(context).pushNamed(ComposePage.route, arguments: diary);
+  }
 
-  void _delete(Diary diary) {}
+  void _delete(Diary diary) {
+    Navigator.of(context).pop();
+  }
 
   void _share(Diary diary) {}
 
@@ -119,6 +114,8 @@ class _DiaryPageState extends State<DiaryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final diary = ModalRoute.of(context)?.settings.arguments as Diary;
+
     return GestureDetector(
       onTap: () {
         setState(() {

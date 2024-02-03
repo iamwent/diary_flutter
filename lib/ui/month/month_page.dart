@@ -1,8 +1,9 @@
 import 'package:diary_flutter/model/month.dart';
 import 'package:diary_flutter/model/year.dart';
+import 'package:diary_flutter/repository/diary_store.dart';
+import 'package:diary_flutter/ui/compose/compose_page.dart';
 import 'package:diary_flutter/ui/day/day_page.dart';
 import 'package:diary_flutter/ui/year/year_page.dart';
-import 'package:diary_flutter/util/lunar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:mongol/mongol.dart';
 
@@ -16,12 +17,22 @@ class MonthPage extends StatefulWidget {
 }
 
 class _MonthPageState extends State<MonthPage> {
-  final months = [for (int i = 1; i <= 12; i++) i]
-      .map((month) => Month(
-            value: month,
-            text: '${LunarUtil.month2Chinese(month)}月',
-          ))
-      .toList();
+  List<Month> months = [];
+
+  var _isLoaded = false;
+
+  void _load(Year year) {
+    if (_isLoaded) {
+      return;
+    }
+    _isLoaded = true;
+
+    DiaryStore().findMonths(year.value).then((value) => {
+          setState(() {
+            months = value;
+          })
+        });
+  }
 
   void _openDayPage(Year year, Month month) {
     Navigator.of(context).pushNamed(DayPage.route, arguments: (year, month));
@@ -31,7 +42,9 @@ class _MonthPageState extends State<MonthPage> {
     Navigator.of(context).pushNamedAndRemoveUntil(YearPage.route, (_) => false);
   }
 
-  void _openComposePage() {}
+  void _openComposePage() {
+    Navigator.of(context).pushNamed(ComposePage.route);
+  }
 
   Widget sidebar(
     Year year, {
@@ -123,6 +136,7 @@ class _MonthPageState extends State<MonthPage> {
   @override
   Widget build(BuildContext context) {
     final year = ModalRoute.of(context)?.settings.arguments as Year;
+    _load(year);
 
     return GestureDetector(
       onDoubleTap: () {

@@ -1,6 +1,8 @@
 import 'package:diary_flutter/model/diary.dart';
 import 'package:diary_flutter/model/month.dart';
 import 'package:diary_flutter/model/year.dart';
+import 'package:diary_flutter/repository/diary_store.dart';
+import 'package:diary_flutter/ui/compose/compose_page.dart';
 import 'package:diary_flutter/ui/diary/diary_page.dart';
 import 'package:diary_flutter/ui/year/year_page.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +18,22 @@ class DayPage extends StatefulWidget {
 }
 
 class _DayPageState extends State<DayPage> {
-  final diaries = [
-    Diary(
-      id: 0,
-      year: 2024,
-      month: 1,
-      title: '江南好',
-      content: '江南好\n风景旧曾谙\n日出江花红胜火\n春来江水绿如蓝\n能不忆江南',
-      location: '武汉',
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-    )
-  ];
+  List<Diary> diaries = [];
+
+  var _isLoaded = false;
+
+  void _load(Year year, Month month) {
+    if (_isLoaded) {
+      return;
+    }
+    _isLoaded = true;
+
+    DiaryStore().findAll(year.value, month.value).then((value) => {
+          setState(() {
+            diaries = value;
+          })
+        });
+  }
 
   void _openYearPage() {
     Navigator.of(context).pushNamedAndRemoveUntil(YearPage.route, (_) => false);
@@ -37,10 +44,12 @@ class _DayPageState extends State<DayPage> {
   }
 
   void _openDiaryPage(Diary diary) {
-    Navigator.of(context).pushNamed(DiaryPage.route);
+    Navigator.of(context).pushNamed(DiaryPage.route, arguments: diary);
   }
 
-  void _openComposePage() {}
+  void _openComposePage() {
+    Navigator.of(context).pushNamed(ComposePage.route);
+  }
 
   Widget sidebar(
     Year year,
@@ -144,8 +153,8 @@ class _DayPageState extends State<DayPage> {
 
   @override
   Widget build(BuildContext context) {
-    final (year, month) =
-        ModalRoute.of(context)?.settings.arguments as (Year, Month);
+    final (year, month) = ModalRoute.of(context)?.settings.arguments as (Year, Month);
+    _load(year, month);
 
     return GestureDetector(
       onDoubleTap: () {
