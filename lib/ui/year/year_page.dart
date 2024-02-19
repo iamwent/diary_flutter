@@ -2,30 +2,28 @@ import 'package:diary_flutter/model/year.dart';
 import 'package:diary_flutter/repository/diary_store.dart';
 import 'package:diary_flutter/ui/month/month_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mongol/mongol.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class YearPage extends StatefulWidget {
+part 'year_page.g.dart';
+
+@riverpod
+Future<List<Year>> year(YearRef ref) async {
+  final diaryStore = await ref.watch(diaryStoreProvider.future);
+  return diaryStore.findYears();
+}
+
+class YearPage extends ConsumerStatefulWidget {
   const YearPage({super.key});
 
   static const route = 'year_page';
 
   @override
-  State<YearPage> createState() => _YearPageState();
+  ConsumerState<YearPage> createState() => _YearPageState();
 }
 
-class _YearPageState extends State<YearPage> {
-  List<Year> years = [];
-
-  @override
-  void initState() {
-    DiaryStore().findYears().then((value) => {
-          setState(() {
-            years = value;
-          })
-        });
-    super.initState();
-  }
-
+class _YearPageState extends ConsumerState<YearPage> {
   void _openMonthPage(Year year) {
     Navigator.pushNamed(context, MonthPage.route, arguments: year);
   }
@@ -43,6 +41,7 @@ class _YearPageState extends State<YearPage> {
 
   @override
   Widget build(BuildContext context) {
+    final years = ref.watch(yearProvider).requireValue;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       alignment: Alignment.center,

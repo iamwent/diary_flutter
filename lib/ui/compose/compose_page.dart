@@ -3,17 +3,18 @@ import 'package:diary_flutter/repository/diary_store.dart';
 import 'package:diary_flutter/util/lunar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ComposePage extends StatefulWidget {
+class ComposePage extends ConsumerStatefulWidget {
   const ComposePage({super.key});
 
   static const route = 'compose_page';
 
   @override
-  State<ComposePage> createState() => _ComposePageState();
+  ConsumerState<ComposePage> createState() => _ComposePageState();
 }
 
-class _ComposePageState extends State<ComposePage> {
+class _ComposePageState extends ConsumerState<ComposePage> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
   final locationController = TextEditingController();
@@ -50,9 +51,9 @@ class _ComposePageState extends State<ComposePage> {
 
   void _save() async {
     FocusManager.instance.primaryFocus?.unfocus();
-
+    final diaryStore = await ref.read(diaryStoreProvider.future);
     final now = DateTime.now();
-    await DiaryStore()
+    await diaryStore
         .put(Diary(
           id: diary?.id,
           year: diary?.year ?? now.year,

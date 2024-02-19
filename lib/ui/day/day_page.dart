@@ -6,35 +6,28 @@ import 'package:diary_flutter/ui/compose/compose_page.dart';
 import 'package:diary_flutter/ui/diary/diary_page.dart';
 import 'package:diary_flutter/ui/year/year_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mongol/mongol.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class DayPage extends StatefulWidget {
+part 'day_page.g.dart';
+
+@riverpod
+Future<List<Diary>> diaries(DiariesRef ref, Year year, Month month) async {
+  final diaryStore = await ref.watch(diaryStoreProvider.future);
+  return diaryStore.findAll(year.value, month.value);
+}
+
+class DayPage extends ConsumerStatefulWidget {
   const DayPage({super.key});
 
   static const route = 'day_page';
 
   @override
-  State<DayPage> createState() => _DayPageState();
+  ConsumerState<DayPage> createState() => _DayPageState();
 }
 
-class _DayPageState extends State<DayPage> {
-  List<Diary> diaries = [];
-
-  var _isLoaded = false;
-
-  void _load(Year year, Month month) {
-    if (_isLoaded) {
-      return;
-    }
-    _isLoaded = true;
-
-    DiaryStore().findAll(year.value, month.value).then((value) => {
-          setState(() {
-            diaries = value;
-          })
-        });
-  }
-
+class _DayPageState extends ConsumerState<DayPage> {
   void _openYearPage() {
     Navigator.of(context).pushNamedAndRemoveUntil(YearPage.route, (_) => false);
   }
@@ -133,7 +126,7 @@ class _DayPageState extends State<DayPage> {
     );
   }
 
-  Widget diaryList() {
+  Widget diaryList(List<Diary> diaries) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       alignment: Alignment.center,
@@ -154,7 +147,7 @@ class _DayPageState extends State<DayPage> {
   @override
   Widget build(BuildContext context) {
     final (year, month) = ModalRoute.of(context)?.settings.arguments as (Year, Month);
-    _load(year, month);
+    final diaries = ref.watch(diariesProvider(year, month)).requireValue;
 
     return GestureDetector(
       onDoubleTap: () {
@@ -163,7 +156,7 @@ class _DayPageState extends State<DayPage> {
       child: Stack(
         alignment: AlignmentDirectional.topEnd,
         children: [
-          diaryList(),
+          diaryList(diaries),
           sidebar(
             year,
             month,

@@ -5,35 +5,28 @@ import 'package:diary_flutter/ui/compose/compose_page.dart';
 import 'package:diary_flutter/ui/day/day_page.dart';
 import 'package:diary_flutter/ui/year/year_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mongol/mongol.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class MonthPage extends StatefulWidget {
+part 'month_page.g.dart';
+
+@riverpod
+Future<List<Month>> months(MonthsRef ref, Year year) async {
+  final diaryStore = await ref.watch(diaryStoreProvider.future);
+  return diaryStore.findMonths(year.value);
+}
+
+class MonthPage extends ConsumerStatefulWidget {
   const MonthPage({super.key});
 
   static const route = 'month_page';
 
   @override
-  State<MonthPage> createState() => _MonthPageState();
+  ConsumerState<MonthPage> createState() => _MonthPageState();
 }
 
-class _MonthPageState extends State<MonthPage> {
-  List<Month> months = [];
-
-  var _isLoaded = false;
-
-  void _load(Year year) {
-    if (_isLoaded) {
-      return;
-    }
-    _isLoaded = true;
-
-    DiaryStore().findMonths(year.value).then((value) => {
-          setState(() {
-            months = value;
-          })
-        });
-  }
-
+class _MonthPageState extends ConsumerState<MonthPage> {
   void _openDayPage(Year year, Month month) {
     Navigator.of(context).pushNamed(DayPage.route, arguments: (year, month));
   }
@@ -112,7 +105,7 @@ class _MonthPageState extends State<MonthPage> {
     );
   }
 
-  Widget monthList({void Function(Month)? onItemTap}) {
+  Widget monthList(List<Month> months, {void Function(Month)? onItemTap}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       alignment: Alignment.center,
@@ -136,7 +129,7 @@ class _MonthPageState extends State<MonthPage> {
   @override
   Widget build(BuildContext context) {
     final year = ModalRoute.of(context)?.settings.arguments as Year;
-    _load(year);
+    final months = ref.watch(monthsProvider(year)).requireValue;
 
     return GestureDetector(
       onDoubleTap: () {
@@ -145,7 +138,7 @@ class _MonthPageState extends State<MonthPage> {
       child: Stack(
         alignment: AlignmentDirectional.topEnd,
         children: [
-          monthList(onItemTap: (month) {
+          monthList(months, onItemTap: (month) {
             _openDayPage(year, month);
           }),
           sidebar(
