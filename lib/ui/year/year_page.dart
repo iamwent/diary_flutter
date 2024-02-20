@@ -9,9 +9,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'year_page.g.dart';
 
 @riverpod
-Future<List<Year>> year(YearRef ref) async {
+Stream<List<Year>> yearsStream(YearsStreamRef ref) async* {
   final diaryStore = await ref.watch(diaryStoreProvider.future);
-  return diaryStore.findYears();
+  yield* diaryStore.findYears();
 }
 
 class YearPage extends ConsumerStatefulWidget {
@@ -39,28 +39,35 @@ class _YearPageState extends ConsumerState<YearPage> {
     );
   }
 
+  Widget yearList(List<Year> years) {
+    return ListView.builder(
+        padding: const EdgeInsets.all(8),
+        itemCount: years.length,
+        reverse: true,
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (BuildContext context, int index) {
+          final year = years[index];
+          return GestureDetector(
+            onTap: () {
+              _openMonthPage(year);
+            },
+            child: yearItem(year),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final years = ref.watch(yearProvider).requireValue;
+    final yearsAsyncValue = ref.watch(yearsStreamProvider);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 48),
-      alignment: Alignment.center,
-      color: Colors.white,
-      child: ListView.builder(
-          padding: const EdgeInsets.all(8),
-          itemCount: years.length,
-          reverse: true,
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (BuildContext context, int index) {
-            final year = years[index];
-            return GestureDetector(
-              onTap: () {
-                _openMonthPage(year);
-              },
-              child: yearItem(year),
-            );
-          }),
-    );
+        padding: const EdgeInsets.symmetric(horizontal: 48),
+        alignment: Alignment.center,
+        color: Colors.white,
+        child: yearsAsyncValue.when(
+          data: (years) => yearList(years),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, st) => Center(child: Text(e.toString())),
+        ));
   }
 }

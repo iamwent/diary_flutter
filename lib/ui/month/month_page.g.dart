@@ -6,7 +6,7 @@ part of 'month_page.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$monthsHash() => r'ad38325867e91b2a2e476cf540945552e6586685';
+String _$monthsStreamHash() => r'3bdbecae530846c988674660c319a7bb60d59415';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,27 +29,27 @@ class _SystemHash {
   }
 }
 
-/// See also [months].
-@ProviderFor(months)
-const monthsProvider = MonthsFamily();
+/// See also [monthsStream].
+@ProviderFor(monthsStream)
+const monthsStreamProvider = MonthsStreamFamily();
 
-/// See also [months].
-class MonthsFamily extends Family<AsyncValue<List<Month>>> {
-  /// See also [months].
-  const MonthsFamily();
+/// See also [monthsStream].
+class MonthsStreamFamily extends Family<AsyncValue<List<Month>>> {
+  /// See also [monthsStream].
+  const MonthsStreamFamily();
 
-  /// See also [months].
-  MonthsProvider call(
+  /// See also [monthsStream].
+  MonthsStreamProvider call(
     Year year,
   ) {
-    return MonthsProvider(
+    return MonthsStreamProvider(
       year,
     );
   }
 
   @override
-  MonthsProvider getProviderOverride(
-    covariant MonthsProvider provider,
+  MonthsStreamProvider getProviderOverride(
+    covariant MonthsStreamProvider provider,
   ) {
     return call(
       provider.year,
@@ -68,31 +68,32 @@ class MonthsFamily extends Family<AsyncValue<List<Month>>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'monthsProvider';
+  String? get name => r'monthsStreamProvider';
 }
 
-/// See also [months].
-class MonthsProvider extends AutoDisposeFutureProvider<List<Month>> {
-  /// See also [months].
-  MonthsProvider(
+/// See also [monthsStream].
+class MonthsStreamProvider extends AutoDisposeStreamProvider<List<Month>> {
+  /// See also [monthsStream].
+  MonthsStreamProvider(
     Year year,
   ) : this._internal(
-          (ref) => months(
-            ref as MonthsRef,
+          (ref) => monthsStream(
+            ref as MonthsStreamRef,
             year,
           ),
-          from: monthsProvider,
-          name: r'monthsProvider',
+          from: monthsStreamProvider,
+          name: r'monthsStreamProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$monthsHash,
-          dependencies: MonthsFamily._dependencies,
-          allTransitiveDependencies: MonthsFamily._allTransitiveDependencies,
+                  : _$monthsStreamHash,
+          dependencies: MonthsStreamFamily._dependencies,
+          allTransitiveDependencies:
+              MonthsStreamFamily._allTransitiveDependencies,
           year: year,
         );
 
-  MonthsProvider._internal(
+  MonthsStreamProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -106,12 +107,12 @@ class MonthsProvider extends AutoDisposeFutureProvider<List<Month>> {
 
   @override
   Override overrideWith(
-    FutureOr<List<Month>> Function(MonthsRef provider) create,
+    Stream<List<Month>> Function(MonthsStreamRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: MonthsProvider._internal(
-        (ref) => create(ref as MonthsRef),
+      override: MonthsStreamProvider._internal(
+        (ref) => create(ref as MonthsStreamRef),
         from: from,
         name: null,
         dependencies: null,
@@ -123,13 +124,13 @@ class MonthsProvider extends AutoDisposeFutureProvider<List<Month>> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<Month>> createElement() {
-    return _MonthsProviderElement(this);
+  AutoDisposeStreamProviderElement<List<Month>> createElement() {
+    return _MonthsStreamProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is MonthsProvider && other.year == year;
+    return other is MonthsStreamProvider && other.year == year;
   }
 
   @override
@@ -141,17 +142,17 @@ class MonthsProvider extends AutoDisposeFutureProvider<List<Month>> {
   }
 }
 
-mixin MonthsRef on AutoDisposeFutureProviderRef<List<Month>> {
+mixin MonthsStreamRef on AutoDisposeStreamProviderRef<List<Month>> {
   /// The parameter `year` of this provider.
   Year get year;
 }
 
-class _MonthsProviderElement
-    extends AutoDisposeFutureProviderElement<List<Month>> with MonthsRef {
-  _MonthsProviderElement(super.provider);
+class _MonthsStreamProviderElement
+    extends AutoDisposeStreamProviderElement<List<Month>> with MonthsStreamRef {
+  _MonthsStreamProviderElement(super.provider);
 
   @override
-  Year get year => (origin as MonthsProvider).year;
+  Year get year => (origin as MonthsStreamProvider).year;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

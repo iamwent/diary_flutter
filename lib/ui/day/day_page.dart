@@ -13,9 +13,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'day_page.g.dart';
 
 @riverpod
-Future<List<Diary>> diaries(DiariesRef ref, Year year, Month month) async {
+Stream<List<Diary>> diariesStream(DiariesStreamRef ref, Year year, Month month) async* {
   final diaryStore = await ref.watch(diaryStoreProvider.future);
-  return diaryStore.findAll(year.value, month.value);
+  yield* diaryStore.findAll(year.value, month.value);
 }
 
 class DayPage extends ConsumerStatefulWidget {
@@ -147,8 +147,12 @@ class _DayPageState extends ConsumerState<DayPage> {
   @override
   Widget build(BuildContext context) {
     final (year, month) = ModalRoute.of(context)?.settings.arguments as (Year, Month);
-    final diaries = ref.watch(diariesProvider(year, month)).requireValue;
-
+    final diariesAsyncValue = ref.watch(diariesStreamProvider(year, month));
+    final content = diariesAsyncValue.when(
+      data: (diaries) => diaryList(diaries),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text(e.toString())),
+    );
     return GestureDetector(
       onDoubleTap: () {
         Navigator.of(context).pop();
@@ -156,7 +160,7 @@ class _DayPageState extends ConsumerState<DayPage> {
       child: Stack(
         alignment: AlignmentDirectional.topEnd,
         children: [
-          diaryList(diaries),
+          content,
           sidebar(
             year,
             month,

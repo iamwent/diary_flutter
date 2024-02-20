@@ -31,28 +31,36 @@ class DiaryStore {
 
   DiaryStore(this.isar);
 
-  Future<List<Year>> findYears() async {
-    final diaries = await isar.diaryEntitys.where().findAll();
-    final years = diaries.map((diary) => diary.year).whereType<int>().toSet().toList();
-    years.sort((a, b) => a.compareTo(b));
-
-    return years
-        .map(
-          (year) => Year(value: year, text: '${LunarUtil.year2Chinese(year)}年'),
-    )
-        .toList();
+  Stream<List<Year>> findYears() {
+    final stream = isar.diaryEntitys.where().distinctByYear().yearProperty().watch(fireImmediately: true);
+    return stream.map((years) {
+      final sortedYears = years.whereType<int>().toList()..sort((a, b) => a.compareTo(b));
+      return sortedYears
+          .map(
+            (year) => Year(value: year, text: '${LunarUtil.year2Chinese(year)}年'),
+          )
+          .toList();
+    });
   }
 
-  Future<List<Month>> findMonths(int year) async {
-    final diaries = await isar.diaryEntitys.filter().yearEqualTo(year).findAll();
-    final months = diaries.map((diary) => diary.month).whereType<int>().toSet().toList();
-    months.sort((a, b) => a.compareTo(b));
-    return months.map((month) => Month(value: month, text: '${LunarUtil.month2Chinese(month)}月')).toList();
+  Stream<List<Month>> findMonths(int year) {
+    final stream =
+        isar.diaryEntitys.filter().yearEqualTo(year).distinctByMonth().monthProperty().watch(fireImmediately: true);
+    return stream.map((months) {
+      final sortedMonths = months.whereType<int>().toList()..sort((a, b) => a.compareTo(b));
+      return sortedMonths.map((month) => Month(value: month, text: '${LunarUtil.month2Chinese(month)}月')).toList();
+    });
   }
 
-  Future<List<Diary>> findAll(int year, int month) async {
-    final entities = await isar.diaryEntitys.filter().yearEqualTo(year).and().monthEqualTo(month).findAll();
-    return entities.map((entity) => entity.toDiary()).toList();
+  Stream<List<Diary>> findAll(int year, int month) {
+    final stream = isar.diaryEntitys
+        .filter()
+        .yearEqualTo(year)
+        .and()
+        .monthEqualTo(month)
+        .sortByCreatedAt()
+        .watch(fireImmediately: true);
+    return stream.map((entities) => entities.map((entity) => entity.toDiary()).toList());
   }
 
   Future<Diary?> find(Id id) async {

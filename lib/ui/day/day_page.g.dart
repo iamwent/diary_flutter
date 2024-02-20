@@ -6,7 +6,7 @@ part of 'day_page.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$diariesHash() => r'5d925035367dddd2396d1b44766016a9b13b348d';
+String _$diariesStreamHash() => r'43955c20910958070a7ab7cad8acc28923ec0930';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,29 +29,29 @@ class _SystemHash {
   }
 }
 
-/// See also [diaries].
-@ProviderFor(diaries)
-const diariesProvider = DiariesFamily();
+/// See also [diariesStream].
+@ProviderFor(diariesStream)
+const diariesStreamProvider = DiariesStreamFamily();
 
-/// See also [diaries].
-class DiariesFamily extends Family<AsyncValue<List<Diary>>> {
-  /// See also [diaries].
-  const DiariesFamily();
+/// See also [diariesStream].
+class DiariesStreamFamily extends Family<AsyncValue<List<Diary>>> {
+  /// See also [diariesStream].
+  const DiariesStreamFamily();
 
-  /// See also [diaries].
-  DiariesProvider call(
+  /// See also [diariesStream].
+  DiariesStreamProvider call(
     Year year,
     Month month,
   ) {
-    return DiariesProvider(
+    return DiariesStreamProvider(
       year,
       month,
     );
   }
 
   @override
-  DiariesProvider getProviderOverride(
-    covariant DiariesProvider provider,
+  DiariesStreamProvider getProviderOverride(
+    covariant DiariesStreamProvider provider,
   ) {
     return call(
       provider.year,
@@ -71,34 +71,35 @@ class DiariesFamily extends Family<AsyncValue<List<Diary>>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'diariesProvider';
+  String? get name => r'diariesStreamProvider';
 }
 
-/// See also [diaries].
-class DiariesProvider extends AutoDisposeFutureProvider<List<Diary>> {
-  /// See also [diaries].
-  DiariesProvider(
+/// See also [diariesStream].
+class DiariesStreamProvider extends AutoDisposeStreamProvider<List<Diary>> {
+  /// See also [diariesStream].
+  DiariesStreamProvider(
     Year year,
     Month month,
   ) : this._internal(
-          (ref) => diaries(
-            ref as DiariesRef,
+          (ref) => diariesStream(
+            ref as DiariesStreamRef,
             year,
             month,
           ),
-          from: diariesProvider,
-          name: r'diariesProvider',
+          from: diariesStreamProvider,
+          name: r'diariesStreamProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$diariesHash,
-          dependencies: DiariesFamily._dependencies,
-          allTransitiveDependencies: DiariesFamily._allTransitiveDependencies,
+                  : _$diariesStreamHash,
+          dependencies: DiariesStreamFamily._dependencies,
+          allTransitiveDependencies:
+              DiariesStreamFamily._allTransitiveDependencies,
           year: year,
           month: month,
         );
 
-  DiariesProvider._internal(
+  DiariesStreamProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -114,12 +115,12 @@ class DiariesProvider extends AutoDisposeFutureProvider<List<Diary>> {
 
   @override
   Override overrideWith(
-    FutureOr<List<Diary>> Function(DiariesRef provider) create,
+    Stream<List<Diary>> Function(DiariesStreamRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: DiariesProvider._internal(
-        (ref) => create(ref as DiariesRef),
+      override: DiariesStreamProvider._internal(
+        (ref) => create(ref as DiariesStreamRef),
         from: from,
         name: null,
         dependencies: null,
@@ -132,13 +133,13 @@ class DiariesProvider extends AutoDisposeFutureProvider<List<Diary>> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<Diary>> createElement() {
-    return _DiariesProviderElement(this);
+  AutoDisposeStreamProviderElement<List<Diary>> createElement() {
+    return _DiariesStreamProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is DiariesProvider &&
+    return other is DiariesStreamProvider &&
         other.year == year &&
         other.month == month;
   }
@@ -153,7 +154,7 @@ class DiariesProvider extends AutoDisposeFutureProvider<List<Diary>> {
   }
 }
 
-mixin DiariesRef on AutoDisposeFutureProviderRef<List<Diary>> {
+mixin DiariesStreamRef on AutoDisposeStreamProviderRef<List<Diary>> {
   /// The parameter `year` of this provider.
   Year get year;
 
@@ -161,14 +162,15 @@ mixin DiariesRef on AutoDisposeFutureProviderRef<List<Diary>> {
   Month get month;
 }
 
-class _DiariesProviderElement
-    extends AutoDisposeFutureProviderElement<List<Diary>> with DiariesRef {
-  _DiariesProviderElement(super.provider);
+class _DiariesStreamProviderElement
+    extends AutoDisposeStreamProviderElement<List<Diary>>
+    with DiariesStreamRef {
+  _DiariesStreamProviderElement(super.provider);
 
   @override
-  Year get year => (origin as DiariesProvider).year;
+  Year get year => (origin as DiariesStreamProvider).year;
   @override
-  Month get month => (origin as DiariesProvider).month;
+  Month get month => (origin as DiariesStreamProvider).month;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
