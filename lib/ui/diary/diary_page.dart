@@ -2,26 +2,42 @@ import 'package:diary_flutter/model/diary.dart';
 import 'package:diary_flutter/ui/compose/compose_page.dart';
 import 'package:diary_flutter/util/lunar_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar/isar.dart';
 import 'package:mongol/mongol.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class DiaryPage extends StatefulWidget {
+import '../../repository/diary_store.dart';
+
+part 'diary_page.g.dart';
+
+@riverpod
+Stream<Diary?> diaryStream(DiaryStreamRef ref, Id id) async* {
+  final diaryStore = await ref.watch(diaryStoreProvider.future);
+  yield* diaryStore.find(id);
+}
+
+class DiaryPage extends ConsumerStatefulWidget {
   const DiaryPage({super.key});
 
   static const route = 'diary_page';
 
   @override
-  State<DiaryPage> createState() => _DiaryPageState();
+  ConsumerState<DiaryPage> createState() => _DiaryPageState();
 }
 
-class _DiaryPageState extends State<DiaryPage> {
+class _DiaryPageState extends ConsumerState<DiaryPage> {
   bool _visible = true;
 
   void _compose(Diary diary) {
     Navigator.of(context).pushNamed(ComposePage.route, arguments: diary);
   }
 
-  void _delete(Diary diary) {
-    Navigator.of(context).pop();
+  void _delete(Diary diary) async {
+    final diaryStore = await ref.watch(diaryStoreProvider.future);
+    diaryStore.delete(diary.id!).then((_) {
+      Navigator.of(context).pop();
+    });
   }
 
   void _share(Diary diary) {}
@@ -112,9 +128,10 @@ class _DiaryPageState extends State<DiaryPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final diary = ModalRoute.of(context)?.settings.arguments as Diary;
+  Widget content(Diary? diary) {
+    if (diary == null) {
+      return Container();
+    }
 
     return GestureDetector(
       onTap: () {
@@ -153,6 +170,18 @@ class _DiaryPageState extends State<DiaryPage> {
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final id = (ModalRoute.of(context)?.settings.arguments as Diary).id as Id;
+    final diaryAsyncValue = ref.watch(diaryStreamProvider(id));
+
+    return diaryAsyncValue.when(
+      data: (diary) => content(diary),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text(e.toString())),
     );
   }
 }

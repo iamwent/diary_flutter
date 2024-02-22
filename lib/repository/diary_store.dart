@@ -63,9 +63,8 @@ class DiaryStore {
     return stream.map((entities) => entities.map((entity) => entity.toDiary()).toList());
   }
 
-  Future<Diary?> find(Id id) async {
-    final entity = await isar.diaryEntitys.get(id);
-    return entity?.toDiary();
+  Stream<Diary?> find(Id id) {
+    return isar.diaryEntitys.watchObject(id, fireImmediately: true).map((event) => event?.toDiary());
   }
 
   Future<void> put(Diary diary) async {
