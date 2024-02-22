@@ -3,33 +3,15 @@ import 'package:diary_flutter/repository/diary_store.dart';
 import 'package:diary_flutter/util/lunar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ComposePage extends ConsumerStatefulWidget {
+class ComposePage extends HookConsumerWidget {
   const ComposePage({super.key});
 
   static const route = 'compose_page';
 
-  @override
-  ConsumerState<ComposePage> createState() => _ComposePageState();
-}
-
-class _ComposePageState extends ConsumerState<ComposePage> {
-  final titleController = TextEditingController();
-  final contentController = TextEditingController();
-  final locationController = TextEditingController();
-
-  Diary? diary;
-
-  @override
-  void dispose() {
-    titleController.dispose();
-    contentController.dispose();
-    locationController.dispose();
-    super.dispose();
-  }
-
-  Diary defaultDiary() {
+  Diary _defaultDiary() {
     final now = DateTime.now();
     return Diary(
       id: null,
@@ -42,34 +24,36 @@ class _ComposePageState extends ConsumerState<ComposePage> {
     );
   }
 
-  void init() {
-    diary = ModalRoute.of(context)?.settings.arguments as Diary? ?? defaultDiary();
-    titleController.text = diary?.title ?? '';
-    contentController.text = diary?.content ?? '';
-    locationController.text = diary?.location ?? '';
-  }
-
-  void _save() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    final diaryStore = await ref.read(diaryStoreProvider.future);
-    final now = DateTime.now();
-    await diaryStore
-        .put(Diary(
-          id: diary?.id,
-          year: diary?.year ?? now.year,
-          month: diary?.month ?? now.month,
-          title: titleController.text,
-          content: contentController.text,
-          location: locationController.text,
-          createdAt: diary?.createdAt ?? now.millisecondsSinceEpoch,
-        ))
-        .then((value) => Navigator.of(context).pop());
-  }
-
   @override
-  Widget build(BuildContext context) {
-    init();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final diary = ModalRoute.of(context)?.settings.arguments as Diary? ?? _defaultDiary();
+
+    final titleController = useTextEditingController(text: diary.title);
+    final contentController = useTextEditingController(text: diary.content);
+    final locationController = useTextEditingController(text: diary.location);
+
+    void save() async {
+      FocusManager.instance.primaryFocus?.unfocus();
+      final diaryStore = await ref.read(diaryStoreProvider.future);
+      final now = DateTime.now();
+      await diaryStore
+          .put(Diary(
+            id: diary.id,
+            year: diary.year ?? now.year,
+            month: diary.month ?? now.month,
+            title: titleController.text,
+            content: contentController.text,
+            location: locationController.text,
+            createdAt: diary.createdAt ?? now.millisecondsSinceEpoch,
+          ))
+          .then((value) => Navigator.of(context).pop());
+    }
+
+    useEffect(() {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+      return null;
+    });
+
     return Scaffold(
       appBar: null,
       resizeToAvoidBottomInset: false,
@@ -112,7 +96,7 @@ class _ComposePageState extends ConsumerState<ComposePage> {
                 GestureDetector(
                   // onTap: openComposePage,
                   onTap: () {
-                    _save();
+                    save();
                   },
                   child: Container(
                     width: 32,
